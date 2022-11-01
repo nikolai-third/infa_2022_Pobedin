@@ -1,10 +1,12 @@
 import pygame
-from pygame.draw import *
-from random import randint
 from classes import Ball, strike
+import os
+
+os.chdir("/Users/nort/Desktop/infa_2022_Pobedin/lab8/catch_ball")
+
 pygame.init()
 
-FPS = 30
+FPS = 45
 screen = pygame.display.set_mode((900, 500))
 
 RED = (255, 0, 0)
@@ -52,6 +54,7 @@ while not finished:
     pygame.display.flip()
 
 print(points)
-file = open('leaderboard2.txt', 'w')
+file = open('leaderboard2.txt', 'a')
 file.write('{} \n'.format(points))
+file.close()
 pygame.quit()
