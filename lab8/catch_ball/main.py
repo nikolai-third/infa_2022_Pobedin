@@ -1,9 +1,10 @@
 import pygame
 from pygame.draw import *
 from random import randint
+from classes import Ball, strike
 pygame.init()
 
-FPS = 1
+FPS = 30
 screen = pygame.display.set_mode((900, 500))
 
 RED = (255, 0, 0)
@@ -16,40 +17,41 @@ BLACK = (0, 0, 0)
 COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 
-def new_ball():
-    """рисует новый шарик"""
-    global x, y, r
-    x = randint(100, 900)
-    y = randint(100, 500)
-    r = randint(10, 100)
-    color = COLORS[randint(0, 5)]
-    circle(screen, color, (x, y), r)
-
-
-def strike(xm, ym):
-    """Проверяет попал ли пользователь кликом по шару"""
-    print(xm, ym)
-    if ((x-xm)**2 + (y-ym)**2) <= r**2:
-        return True
-    else:
-        return False
-
-
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
+
+balls = pygame.sprite.Group()
+for i in range(10):
+    b = Ball()
+    balls.add(b)
+
+points = 0
+
+u = 0
 
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                if strike(event.pos[0], event.pos[1]):
-                    print('BOOM')
-    new_ball()
+                data = []
+                for i in balls:
+                    if strike(event.pos[0], event.pos[1], i.coordinate()):
+                        i.kill()
+                        points += 1
+                        b = Ball()
+                        balls.add(b)
+
+    balls.update()
     pygame.display.update()
     screen.fill(BLACK)
+    balls.draw(screen)
+    pygame.display.flip()
 
+print(points)
+file = open('leaderboard2.txt', 'w')
+file.write('{} \n'.format(points))
 pygame.quit()
