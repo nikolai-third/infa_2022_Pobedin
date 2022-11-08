@@ -21,18 +21,24 @@ class Target(pygame.sprite.Sprite):
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius))
         self.image.set_alpha(255)  # делает поверхность прозрачной
         self.rect = self.image.get_rect()
-        self.rect.x = 600  # координаты шара
-        self.rect.y = random.randint(100, 500)
+        self.rect.x = random.randint(100, 600)  # координаты шара
+        self.rect.y = random.randint(100, 400)
         self.color = (128, 0, 0)
         pygame.draw.circle(self.image, self.color, (self.radius, self.radius), self.radius)  # рисует шар с обводкой
         pygame.draw.circle(self.image, (0, 0, 0), (self.radius, self.radius), self.radius, 2)
+        self.vx = random.choice([-4, -3, -2, -1, 1, 2, 3, 4])
         self.vy = random.choice([-4, -3, -2, -1, 1, 2, 3, 4])
 
     def update(self):
         self.rect.y += self.vy
-        if self.rect.bottom > 500:
+        self.rect.x += self.vx
+        if self.rect.bottom > 530:
             self.vy *= -1
         if self.rect.top < 0:
             self.vy *= -1
+        if self.rect.right > 800:
+            self.vx *= -1
+        if self.rect.left < 0:
+            self.vx *= -1
 
 

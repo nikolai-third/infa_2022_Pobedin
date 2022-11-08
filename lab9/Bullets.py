@@ -15,19 +15,28 @@ GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, alpha=(math.pi/3), module=30):
+    def __init__(self, alpha=(math.pi/3), time=0, size='s',  x=10, y=400, ):
         pygame.sprite.Sprite.__init__(self)
-        self.radius = 10  # радиус шара
+        if size == 's':
+            self.radius = 10  # радиус шара
+            self.color = YELLOW
+            self.module = 150 * time
+
+        elif size == 'b':
+            self.radius = 30
+            self.color = CYAN
+            self.module = 50 * time
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius))
         self.image.set_alpha(255)  # делает поверхность прозрачной
         self.rect = self.image.get_rect()
-        self.rect.x = 10  # координаты шара
-        self.rect.y = 400
-        self.color = random.choice(GAME_COLORS)
+        self.rect.centerx = x  # координаты шара
+        self.rect.centery = y
         pygame.draw.circle(self.image, self.color, (self.radius, self.radius), self.radius)  # круг с обводкой
         pygame.draw.circle(self.image, (0, 0, 0), (self.radius, self.radius), self.radius, 1)
-        self.vx = int(module * math.cos(alpha))  # генерируется скорость
-        self.vy = -int(module * math.sin(alpha))
+        if alpha < 0:
+            alpha += math.pi
+        self.vx = int(self.module * math.cos(alpha))  # генерируется скорость
+        self.vy = -int(self.module * math.sin(alpha))
         self.time = 0  # время, которое начнет отсчет, когда шар остановится
         self.kill_marker = 0  # 0 - шар двигается и его нельзя kill, 1 - шар стоит на месте, можно kill через 1.5с
 
@@ -39,10 +48,10 @@ class Ball(pygame.sprite.Sprite):
         """
         self.rect.x += self.vx
 
-        if not (self.rect.bottom == 550):
+        if not (self.rect.bottom == 580):
             self.vy += 2
 
-        if (self.rect.bottom + self.vy) > 550:
+        if (self.rect.bottom + self.vy) > 580:
             self.vy //= -2
             self.vx //= 1.7
         else:
@@ -58,10 +67,16 @@ class Ball(pygame.sprite.Sprite):
         else:
             self.vx = -self.vx
 
-        if (self.vy / 1.5) < 1.5 and (548 < self.rect.bottom < 550):
+        if (self.rect.top + self.vy) < 0:
+            self.vy //= -2
+            self.vx //= 1.7
+        else:
+            self.rect.y += self.vy
+
+        if (self.vy / 1.5) < 1.5 and (578 < self.rect.bottom < 580):
             self.vx = 0
             self.vy = 0
-            self.rect.bottom = 550
+            self.rect.bottom = 580
 
         if self.vx == 0 and self.vy == 0 and self.kill_marker == 0:
             self.kill_marker = 1
