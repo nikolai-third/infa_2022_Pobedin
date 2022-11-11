@@ -17,8 +17,7 @@ class Gun(pygame.sprite.Sprite):
     def __init__(self, photos):
         pygame.sprite.Sprite.__init__(self)
         self.photos = photos
-        self.image = self.photos[0]  # Изображение - 40 прозрачных пикселей, 40 черных пикселей в длину, 10 в высоту,
-        # так как вращение происходит вокруг центра поверхности
+        self.image = self.photos[0]
         self.rect = self.image.get_rect()
         self.rect.x = 400
         self.rect.bottom = 580
@@ -26,12 +25,14 @@ class Gun(pygame.sprite.Sprite):
         self.angle = 0
         self.marker = 0  # отвечает за то куда направлена башня, то есть откуда должен вылететь шар
         self.direction = 0  # чтобы двигалось, когда кнопка зажата
+        self.mask = pygame.mask.from_surface(self.image)  # Маска для более корректных столкновений
 
     def fire(self, t):
         """
         Выстрел
         :param t: - время зажатия мышки, если больше 2с, то все равно максимальная сила выстрела
-        :return: кортеж (угол под которым видно курсор из пушки, корректное время)
+        :return: кортеж (Angle - угол, в который должен вылетать шар, t - время зажатия кнопки,
+        x, y - координаты, где должен появится снаряд, чтобы это выглядело корректно)
         """
         if t > 2000:
             t = 2000
@@ -69,16 +70,20 @@ class Gun(pygame.sprite.Sprite):
         self.angle = math.atan(y / x)
 
     def speed(self, direction):
+        """
+        Изменяет направление скорости, когда игрок нажимает или отжимает кнопки направления
+        :param direction: направление скорости
+        """
         if direction == 'right':
-            self.direction = 1
+            self.vx = 7
         elif direction == 'left':
-            self.direction = -1
+            self.vx = -7
         elif direction == 'stop':
-            self.direction = 0
+            self.vx = 0
 
     def update(self):
         """
-        Поворачивает пушку каждый кадр, чтобы она смотрела на курсор, при этом центр поверхности остается на месте
+        Меняет спрайт танка на соотвествующий текущему углу на курсор, а также двигает танк
         :return: None
         """
         if 0 <= self.angle <= math.pi/5:
@@ -124,16 +129,9 @@ class Gun(pygame.sprite.Sprite):
             self.rect.bottom = 580
             self.marker = 4
 
-        if self.direction == 1:
-            self.vx = 2
-        elif self.direction == -1:
-            self.vx = -2
-        else:
-            self.vx = 0
         if (self.rect.left + self.vx) < 0:
             self.vx = 0
         if (self.rect.right + self.vx) > 800:
             self.vx = 0
         else:
             self.rect.x += self.vx
-

@@ -16,6 +16,14 @@ GAME_COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, alpha=(math.pi/3), time=0, size='s',  x=10, y=400, ):
+        """
+
+        :param alpha: углол под которым должен вылетать мяч
+        :param time: время зажать кноки, влияющее на модуль скорости
+        :param size: размер шара, s - маленький и быстрый, b - большой и медленный
+        :param x: кооридината по х, где должен появится мяч
+        :param y: кооридината по у, где должен появится мяч
+        """
         pygame.sprite.Sprite.__init__(self)
         if size == 's':
             self.radius = 10  # радиус шара
@@ -23,9 +31,9 @@ class Ball(pygame.sprite.Sprite):
             self.module = 150 * time
 
         elif size == 'b':
-            self.radius = 30
+            self.radius = 15
             self.color = CYAN
-            self.module = 50 * time
+            self.module = 70 * time
         self.image = pygame.Surface((2 * self.radius, 2 * self.radius))
         self.image.set_alpha(255)  # делает поверхность прозрачной
         self.rect = self.image.get_rect()
@@ -43,7 +51,7 @@ class Ball(pygame.sprite.Sprite):
     def update(self):
         """
         Обвновляет координаты шаров, учитывая, гравитацию, неупругие отскоки от стен, обеспечивает, чтобы шары
-        не проваривались через стены и пол
+        не проваривались через стены и пол. Если шар лежит без движения 1.5 секунды, то его убираем
         :return:
         """
         self.rect.x += self.vx
