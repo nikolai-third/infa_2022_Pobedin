@@ -30,9 +30,9 @@ class Square(pygame.sprite.Sprite):
 
     def chislo(self):
         """
-        Функция вызывается, когда игрок кликнул на клетку левой кнопкой мыши, если она с бомбой, то вызывает детонацию всех остальных бомб,
-        если клетка с числом, то проверяет все соприкосающиеся клетки на их пустоту, если какая-нибудь клетка пустая, то
-        её тоже нужно открыть и так далее
+        Функция вызывается, когда игрок кликнул на клетку левой кнопкой мыши, если она с бомбой, то вызывает детонацию
+        всех остальных бомб, если клетка с числом, то проверяет все соприкосающиеся клетки на их пустоту,
+        если какая-нибудь клетка пустая, то её тоже нужно открыть и так далее
         :return:
         """
         if self.act == 0:
@@ -59,21 +59,21 @@ class Square(pygame.sprite.Sprite):
         и убирает флаг, если self.act == 2
         :return:
         """
+        answer = [False, 0]  # answer[0] = True, если флаг поставлен на бомбу
         if self.NB == -1:
-            answer = [True]
+            answer[0] = [True]
         else:
-            answer = [False]
+            answer[0] = [False]
         if self.act == 0:
             self.image = self.imgsL[10]
             self.act = 2
-            answer.append(1)
-            return answer
+            answer[1] = 1
 
         elif self.act == 2:
             self.image = self.imgsL[9]
             self.act = 0
-            answer.append(-1)
-            return answer
+            answer[1] = -1
+        return answer
 
     def BOOM(self):
         """
@@ -96,4 +96,3 @@ def touch(m, size1):
     th = [[m[0], m[1] - size1], [m[0] + size1, m[1] - size1], [m[0] + size1, m[1]], [m[0] + size1, m[1] + size1],
           [m[0], m[1] + size1], [m[0] - size1, m[1] + size1], [m[0] - size1, m[1]], [m[0] - size1, m[1] - size1]]
     return th
-# def for counting the number of touches of bombs

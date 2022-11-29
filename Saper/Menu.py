@@ -49,6 +49,11 @@ class Menu(pygame.sprite.Sprite):
 
     def render(self, win_or_lose_marker):
         self.image = self.images[win_or_lose_marker]
+        """
+        win_or_lose_marker == 0 - нейтральный режим - первый спрайт в массиве
+        win_or_lose_marker == 1 - режим победы - второй спрайт в массиве
+        win_or_lose_marker == -1 -режим проигрыша - последний спрайт в массиве
+        """
         run = True
         while run:
             self.clock.tick(self.FPS)
