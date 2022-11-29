@@ -86,7 +86,8 @@ menu.render()
 size = menu.size
 # Цикл игры
 running = True
-u = 0
+score = 0
+
 while running:
     # Держим цикл на правильной скорости
     clock.tick(FPS)
@@ -102,9 +103,10 @@ while running:
             xy[0] = ((xy[0] - 1) // size) * size + 1
             xy[1] = ((xy[1] - 1) // size) * size + 1
             if event.button == 1:  # Левая кнопка мыши открывает клетку
-                # if u == 0:
-                #     first_click(xy[0], xy[1], XY, all_sprites, kl, bombs, num, WIDTH, HEIGHT, imgsL, int(field3.text), size)
-                #     u += 1
+                if not num:
+                    W = int(field1.text) * size + 1
+                    H = int(field2.text) * size + 1
+                    first_click(xy[0], xy[1], XY, all_sprites, kl, bombs, num, W, H, imgsL, int(field3.text), size)
                 kl[str(xy)].chislo()
             if event.button == 3:  # Правая кнопка мыши ставит флаг на клетку
                 kl[str(xy)].flag()

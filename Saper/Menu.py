@@ -82,7 +82,7 @@ class Menu(pygame.sprite.Sprite):
                                     int(self.field3.text) <= int(self.field2.text) * int(self.field1.text)):
                                 restart(self.XY, self.all_sprites, self.kl, self.bombs, self.num,
                                         int(self.field1.text) * self.size + 1, int(self.field2.text) * self.size + 1,
-                                        self.imgsL, int(self.field3.text), self.size)
+                                        self.imgsL, self.size)
 
                                 self.rect.x = (int(self.field1.text) * self.size + 1 - 300)//2  # меню в центре игры
                                 self.rect.y = (int(self.field2.text) * self.size + 1 - 300)//4
@@ -106,9 +106,10 @@ class Menu(pygame.sprite.Sprite):
             pygame.display.flip()
 
 
-def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, number1, size):
+def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, size):
     """
-    Функция, которая перезапускает игру, когда игрок нажимает на кнопку
+    Функция, которая перезапускает игру, когда игрок нажимает на кнопку. Создает поле нужного размера со всеми пустыми
+    кнопками
     :param XY1: массив с координатами клеток с цифрами
     :param all_sprites1: группа спрайтов для всех спрайтов
     :param kl1: словарь с клетками
@@ -117,7 +118,6 @@ def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, number1, size):
     :param w: ширина окна
     :param h: высота окна
     :param imgsL1: массив с изображениями
-    :param number1: количество бомб, которые нужно создать
     :param size: размер меню
     :return:
     """
@@ -131,34 +131,10 @@ def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, number1, size):
     for i in range(w // size):
         for j in range(h // size):
             XY1.append([i * size + 1, j * size + 1])
-            # m = [i * size + 1, j * size + 1]
-            # square = (Square(i * size + 1, j * size + 1, 0, 0, imgsL1, kl1, bombs1, size))
-            # kl1[str(m)] = square
-            # all_sprites1.add(square)
-
-    for i in range(number1):
-        m = random.choice(XY1)
-        num1.append(m)
-        XY1.remove(m)
-    # create bomb's coordinates
-
-    for i in range((w // size)):
-        for j in range((h // size)):
             m = [i * size + 1, j * size + 1]
-            if m in num1:
-                square = (Square(i * size + 1, j * size + 1, -1, 0, imgsL1, kl1, bombs1, size))
-                kl1[str(m)] = square
-                bombs1[str(m)] = square
-                all_sprites1.add(square)
-            else:
-                Th = touch(m, size)
-                NB = 0
-                for u in Th:
-                    if u in num1:
-                        NB += 1
-                square = (Square(i * size + 1, j * size + 1, NB, 0, imgsL1, kl1, bombs1, size))
-                kl1[str(m)] = square
-                all_sprites1.add(square)
+            square = (Square(i * size + 1, j * size + 1, 0, 0, imgsL1, kl1, bombs1, size))
+            kl1[str(m)] = square
+            all_sprites1.add(square)
 
 
 def touch(m, size1):
@@ -175,28 +151,36 @@ def touch(m, size1):
 
 
 def first_click(x0, y0, XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, number1, size):
-    # all_sprites1.empty()
-    # forbidden = []
-    # forbidden.append([x0, y0])
-    #
-    # for i in touch([x0, y0], size):
-    #     forbidden.append(i)
-    #
-    # for i in range(number1):
-    #     m = random.choice(XY1)
-    #     while m in forbidden:
-    #         m = random.choice(XY1)
-    #     num1.append(m)
-    #     XY1.remove(m)
-    all_sprites1.empty()
-    for i in range(number1):
-        print(i)
+    """
+    Функция вызывается после первого клика, генерирует поле, при этом первая клетка всегда должна быть пустой
+    :param x0: х первого клика
+    :param y0: у первого клика
+    :param XY1: массив со всеми клетками с цифрами
+    :param all_sprites1: группа спрайтов для всех клеток
+    :param kl1: словарь со всеми клетками: ключ - координаты, значение - спрайт
+    :param bombs1: словарь с бомбами
+    :param num1: массив с координатами бомб
+    :param w: ширина экрана
+    :param h: высота экрана
+    :param imgsL1: массив с изображениями
+    :param number1: количество бомб, которые нужно создать
+    :param size: размер клетки
+    :return:
+    """
+    forbidden = []
+    forbidden.append([x0, y0])  # чтобы первая была пустая бомб не должно быть в ней и вокруг неё
+
+    for i in touch([x0, y0], size):
+        forbidden.append(i)
+
+    for i in range(number1):  # случайным образом расставляет бомбы, так чтобы в forbidden координатах их не было
         m = random.choice(XY1)
+        while m in forbidden:
+            m = random.choice(XY1)
         num1.append(m)
         XY1.remove(m)
-    # create bomb's coordinates
 
-    for i in range((w // size)):
+    for i in range((w // size)):  # делает квадраты бомбами или клетками с цифрами
         for j in range((h // size)):
             m = [i * size + 1, j * size + 1]
             if m in num1:
@@ -206,7 +190,7 @@ def first_click(x0, y0, XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, numb
                 all_sprites1.add(square)
             else:
                 Th = touch(m, size)
-                NB = 0
+                NB = 0  # число, которое будет написано на клетке
                 for u in Th:
                     if u in num1:
                         NB += 1
