@@ -52,7 +52,7 @@ names_squareL = ['zeroL.png', 'oneL.png', 'twoL.png', 'threeL.png', 'fourL.png',
                  'eightL.png', 'closeL.png', 'flagL.png', 'bombL.png', 'detected_bombL.png', 'exploding_bombL.png']
 
 names_menu = ['menu.png', 'button1.png', 'button2.png', 'TextField.png', 'TextFieldActive.png', 'TextField.png',
-              'TextFieldActive.png', 'TextField.png', 'TextFieldActive.png']
+              'TextFieldActive.png', 'TextField.png', 'TextFieldActive.png', 'win_menu.png', 'lose_menu.png']
 
 imgsL = []  # Массив для больших изображений клеток, бомб и флага
 imgs_menu = []  # Массив для изображений меню, текстовых полей и кнопки
@@ -69,31 +69,39 @@ f1 = pygame.font.Font('/{}/ofont.ru_Times New Roman.ttf'.format(img_folder), 36)
 
 options = pygame.sprite.Group()  # Группа спрайтов, связанных с меню (настройками)
 
-but1 = Button(200, 50, (WIDTH-300)//2 + 50, (HEIGHT-300)//4 + 220, imgs_menu[1], imgs_menu[2])
-field1 = TextField(66, 50, (WIDTH-300)//2 + 31, (HEIGHT-300)//4 + 90, imgs_menu[3], imgs_menu[4], f1, '15')
-field2 = TextField(66, 50, field1.rect.x + 66 + 20, (HEIGHT-300)//4 + 90, imgs_menu[5], imgs_menu[6], f1, '15')
-field3 = TextField(66, 50, field2.rect.x + 66 + 20, (HEIGHT-300)//4 + 90, imgs_menu[7], imgs_menu[8], f1, '40')
+menu_width_height = 300
+but1 = Button(200, 50, (WIDTH - menu_width_height) // 2 + 50, (HEIGHT - menu_width_height) // 4 + 220, imgs_menu[1],
+              imgs_menu[2])
+field1 = TextField(66, 50, (WIDTH - menu_width_height) // 2 + 31, (HEIGHT - menu_width_height)//4 + 90, imgs_menu[3],
+                   imgs_menu[4], f1, '15')
+field2 = TextField(66, 50, field1.rect.x + 66 + 20, (HEIGHT - menu_width_height) // 4 + 90, imgs_menu[5],
+                   imgs_menu[6], f1, '15')
+field3 = TextField(66, 50, field2.rect.x + 66 + 20, (HEIGHT-menu_width_height) // 4 + 90, imgs_menu[7], imgs_menu[8],
+                   f1, '40')
 menu = Menu(WIDTH, HEIGHT, FPS, field1, field2, field3, but1, imgsL, XY, all_sprites, kl, bombs, num, options,
-            screen, imgs_menu[0])  # Создание всех элементов меню, а потом самого меню вместе с ними
+            screen, [imgs_menu[0], imgs_menu[9], imgs_menu[10]])
+# Создание всех элементов меню, а потом самого меню вместе с ними
 
 options.add(menu)
 options.add(but1)
 options.add(field1)
 options.add(field2)
 options.add(field3)
-menu.render()
+menu.render(0)
 # star the game
 size = menu.size
 # Цикл игры
 running = True
-score = 0
-
+score = 0  # количество флагов установленных на бомбах
+n_flags = 0  # количество флагов
+lose_marker = 0
 while running:
     # Держим цикл на правильной скорости
     clock.tick(FPS)
     clock.tick(FPS)
     # Ввод процесса (события)
     size = menu.size
+    n_bombs = int(field3.text)
     for event in pygame.event.get():
         # check for closing window
         if event.type == pygame.QUIT:
@@ -106,13 +114,20 @@ while running:
                 if not num:
                     W = int(field1.text) * size + 1
                     H = int(field2.text) * size + 1
-                    first_click(xy[0], xy[1], XY, all_sprites, kl, bombs, num, W, H, imgsL, int(field3.text), size)
-                kl[str(xy)].chislo()
+                    first_click(xy[0], xy[1], XY, all_sprites, kl, bombs, num, W, H, imgsL, n_bombs, size)
+                    n_flags = 0
+                if not(kl[str(xy)].chislo()):  # если попал по бомбе, то проиграл(
+                    lose_marker = -1
+
             if event.button == 3:  # Правая кнопка мыши ставит флаг на клетку
-                kl[str(xy)].flag()
+                m = kl[str(xy)].flag()
+                if m[0]:  # Считаем количество флагов и сколько из них попали на бомбы
+                    score += m[1]
+                n_flags += m[1]
+
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_ESCAPE:
-                menu.render()
+                menu.render(0)
     # Обновление
     all_sprites.update()
 
@@ -121,6 +136,15 @@ while running:
     all_sprites.draw(screen)
     # После отрисовки всего, переворачиваем экран
     pygame.display.flip()
+
+    if score == n_bombs:  # Проверка не выиграл ли случайно игрок
+        score = 0
+        menu.render(1)
+
+    if lose_marker == -1:  # Проверка не проиграли ли случайно игрок
+        lose_marker = 0
+        score = 0
+        menu.render(-1)
 
 
 pygame.quit()

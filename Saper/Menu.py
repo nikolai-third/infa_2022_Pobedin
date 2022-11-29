@@ -7,7 +7,6 @@ class Menu(pygame.sprite.Sprite):
     def __init__(self, width, height, FPS1, field1, field2, field3, but1, imgsL1, XY1, all_sprites1, kl1,
                  bombs1, num1, options1, screen1, img):
         """
-
         :param width: ширина
         :param height: высота
         :param FPS1: кадры в секунду
@@ -28,7 +27,8 @@ class Menu(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((300, 300))
         self.imgsL = imgsL1
-        self.image = img
+        self.images = img
+        self.image = self.images[0]
         self.rect = self.image.get_rect()
         self.rect.x = (width-300)//2
         self.rect.y = (height-300)//4
@@ -47,16 +47,19 @@ class Menu(pygame.sprite.Sprite):
         self.screen = screen1
         self.size = 50
 
-    def render(self):
+    def render(self, win_or_lose_marker):
+        self.image = self.images[win_or_lose_marker]
         run = True
         while run:
             self.clock.tick(self.FPS)
             for eventMenu in pygame.event.get():
                 if eventMenu.type == pygame.QUIT:
                     run = False
+
                 if eventMenu.type == pygame.KEYUP:
                     if eventMenu.key == pygame.K_ESCAPE:
                         run = False
+
                 if eventMenu.type == pygame.KEYDOWN:
                     """
                     Если пользователь нажимает на цифры, то проверяется активно ли какое-нибудь текстовое поле, если да
@@ -84,7 +87,7 @@ class Menu(pygame.sprite.Sprite):
                                         int(self.field1.text) * self.size + 1, int(self.field2.text) * self.size + 1,
                                         self.imgsL, self.size)
 
-                                self.rect.x = (int(self.field1.text) * self.size + 1 - 300)//2  # меню в центре игры
+                                self.rect.x = (int(self.field1.text) * self.size + 1 - 300)//2  # меню в центре окна
                                 self.rect.y = (int(self.field2.text) * self.size + 1 - 300)//4
                                 self.field1.rect.x = self.rect.x + 31  # Новые координаты для всех элементов меню
                                 self.field1.rect.y = self.rect.y + 90
@@ -97,9 +100,11 @@ class Menu(pygame.sprite.Sprite):
                                 run = False  # Меню убирается
                             else:
                                 print('BAN')
+
                         self.field1.state()
                         self.field2.state()
                         self.field3.state()
+
             self.but1.click(0)
             self.options.update()
             self.options.draw(self.screen)
@@ -128,6 +133,7 @@ def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, size):
     kl1.clear()
     all_sprites1.empty()
     num1.clear()
+
     for i in range(w // size):
         for j in range(h // size):
             XY1.append([i * size + 1, j * size + 1])
@@ -197,5 +203,3 @@ def first_click(x0, y0, XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, numb
                 square = (Square(i * size + 1, j * size + 1, NB, 0, imgsL1, kl1, bombs1, size))
                 kl1[str(m)] = square
                 all_sprites1.add(square)
-
-

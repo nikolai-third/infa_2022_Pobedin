@@ -50,20 +50,30 @@ class Square(pygame.sprite.Sprite):
                 for i in self.bombs:
                     self.kl[str(i)].BOOM()
                 self.image = self.imgsL[13]
-
+                return False
+        return True
 
     def flag(self):
         """
-        меняет спрайт на спрайт с флагом если self.act == 0 и убирает флаг, если self.act == 2
+        меняет спрайт на спрайт с флагом если self.act == 0
+        и убирает флаг, если self.act == 2
         :return:
         """
+        if self.NB == -1:
+            answer = [True]
+        else:
+            answer = [False]
         if self.act == 0:
             self.image = self.imgsL[10]
             self.act = 2
+            answer.append(1)
+            return answer
 
         elif self.act == 2:
             self.image = self.imgsL[9]
             self.act = 0
+            answer.append(-1)
+            return answer
 
     def BOOM(self):
         """
