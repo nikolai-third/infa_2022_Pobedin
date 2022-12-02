@@ -5,7 +5,7 @@ from Square import Square
 
 class Menu(pygame.sprite.Sprite):
     def __init__(self, width, height, FPS1, field1, field2, field3, but1, imgsL1, XY1, all_sprites1, kl1,
-                 bombs1, num1, options1, screen1, img):
+                 bombs1, num1, options1, screen1, img, un_img):
         """
         :param width: ширина
         :param height: высота
@@ -27,6 +27,7 @@ class Menu(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((300, 300))
         self.imgsL = imgsL1
+        self.un_images = un_img
         self.images = img
         self.image = self.images[0]
         self.rect = self.image.get_rect()
@@ -86,8 +87,7 @@ class Menu(pygame.sprite.Sprite):
                 if eventMenu.type == pygame.MOUSEBUTTONDOWN:
                     if eventMenu.button == 1:
                         if self.but1.click(1) == 1:  # Если нажата кнопка, то игра перезапускается
-                            if (int(self.field1.text) >= 6 and int(self.field2.text) >= 6 and self.field3.text != '' and
-                                    int(self.field3.text) <= int(self.field2.text) * int(self.field1.text)):
+                            if check(self.field1.text, self.field2.text, self.field3.text):
                                 restart(self.XY, self.all_sprites, self.kl, self.bombs, self.num,
                                         int(self.field1.text) * self.size + 1, int(self.field2.text) * self.size + 1,
                                         self.imgsL, self.size)
@@ -104,7 +104,8 @@ class Menu(pygame.sprite.Sprite):
                                 self.but1.rect.y = self.rect.y + 220
                                 run = False  # Меню убирается
                             else:
-                                print('BAN')
+                                self.image = self.un_images[win_or_lose_marker]  # Нужно заменить изображение на
+                                # изображение с надписью
 
                         self.field1.state()
                         self.field2.state()
@@ -114,6 +115,30 @@ class Menu(pygame.sprite.Sprite):
             self.options.update()
             self.options.draw(self.screen)
             pygame.display.flip()
+
+
+def check(field1_txt, field2_txt, field3_txt):
+    """
+    фунцкция проверяет можно ли по введенным пользователем значениям в текстовые поля созздать игровое поле
+    :return:
+    """
+    equation = [field1_txt, field2_txt, field3_txt]
+    if '' in equation or ' ' in equation or '  ' in equation:  # Если одно из полей пустое, то нельзя
+        return False
+
+    for i in range(3):
+        equation[i] = int(equation[i])
+
+    if equation[0] * equation[1] < equation[2]:  # Если бомб больше, чем клеток, то нельзя
+        return False
+
+    if equation[0] * equation[1] - equation[2] > 1500:  # Если бомб слишком мало, то нельзя
+        return False
+
+    if equation[0] < 6 or equation[1] < 6:  # Размер меню 6х6 клеток, так что меньше нельзя
+        return False
+
+    return True
 
 
 def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, size):
@@ -208,3 +233,5 @@ def first_click(x0, y0, XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, numb
                 square = (Square(i * size + 1, j * size + 1, NB, 0, imgsL1, kl1, bombs1, size))
                 kl1[str(m)] = square
                 all_sprites1.add(square)
+
+

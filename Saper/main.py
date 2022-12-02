@@ -52,7 +52,8 @@ names_squareL = ['zeroL.png', 'oneL.png', 'twoL.png', 'threeL.png', 'fourL.png',
                  'eightL.png', 'closeL.png', 'flagL.png', 'bombL.png', 'detected_bombL.png', 'exploding_bombL.png']
 
 names_menu = ['menu.png', 'button1.png', 'button2.png', 'TextField.png', 'TextFieldActive.png', 'TextField.png',
-              'TextFieldActive.png', 'TextField.png', 'TextFieldActive.png', 'win_menu.png', 'lose_menu.png']
+              'TextFieldActive.png', 'TextField.png', 'TextFieldActive.png', 'win_menu.png', 'lose_menu.png',
+              'un_menu.png', 'un_win_menu.png', 'un_lose_menu.png']
 
 imgsL = []  # Массив для больших изображений клеток, бомб и флага
 imgs_menu = []  # Массив для изображений меню, текстовых полей и кнопки
@@ -79,7 +80,7 @@ field2 = TextField(66, 50, field1.rect.x + 66 + 20, (HEIGHT - menu_width_height)
 field3 = TextField(66, 50, field2.rect.x + 66 + 20, (HEIGHT-menu_width_height) // 4 + 90, imgs_menu[7], imgs_menu[8],
                    f1, '40')
 menu = Menu(WIDTH, HEIGHT, FPS, field1, field2, field3, but1, imgsL, XY, all_sprites, kl, bombs, num, options,
-            screen, [imgs_menu[0], imgs_menu[9], imgs_menu[10]])
+            screen, [imgs_menu[0], imgs_menu[9], imgs_menu[10]], [imgs_menu[11], imgs_menu[12], imgs_menu[13]])
 # Создание всех элементов меню, а потом самого меню вместе с ними
 
 options.add(menu)
