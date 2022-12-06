@@ -4,6 +4,8 @@ from Menu import Menu
 from Menu import first_click
 from Button import Button
 from TextField import TextField
+from Status_bar import StatusBar
+from Start import StartText
 
 
 FPS = 30
@@ -21,7 +23,6 @@ os.environ['SDL_VIDEO_WINDOW_POS'] = '%d,%d' % (x, y)
 
 # Создаем игру и окно
 pygame.init()
-pygame.mixer.init()
 
 clock = pygame.time.Clock()
 # variable of time
@@ -53,20 +54,28 @@ names_squareL = ['zeroL.png', 'oneL.png', 'twoL.png', 'threeL.png', 'fourL.png',
 
 names_menu = ['menu.png', 'button1.png', 'button2.png', 'TextField.png', 'TextFieldActive.png', 'TextField.png',
               'TextFieldActive.png', 'TextField.png', 'TextFieldActive.png', 'win_menu.png', 'lose_menu.png',
-              'un_menu.png', 'un_win_menu.png', 'un_lose_menu.png']
+              'un_menu.png', 'un_win_menu.png', 'un_lose_menu.png', 'start_text.png']
 
 imgsL = []  # Массив для больших изображений клеток, бомб и флага
 imgs_menu = []  # Массив для изображений меню, текстовых полей и кнопки
 
 game_folder = os.path.dirname(os.path.abspath(__file__))
 img_folder = os.path.join(game_folder, 'img')
+
+start_button = Button(170, 20, 65, 540, pygame.image.load(os.path.join(img_folder, 'start_button1.png')),
+                      pygame.image.load(os.path.join(img_folder, 'start_button2.png')))
+st = StartText(pygame.image.load(os.path.join(img_folder, 'start_text.png')), screen, start_button)
+
+st.render()
+
 for i in range(len(names_squareL)):
     imgsL.append(pygame.image.load(os.path.join(img_folder, names_squareL[i])))
 
 for i in range(len(names_menu)):
     imgs_menu.append(pygame.image.load(os.path.join(img_folder, names_menu[i])))
 
-f1 = pygame.font.Font('/{}/ofont.ru_Times New Roman.ttf'.format(img_folder), 36)  # Шрифт для цифр
+f1 = pygame.font.Font('/{}/ofont.ru_Times New Roman.ttf'.format(img_folder), 36)  # Шрифт для цифр в текстовых полях
+f2 = pygame.font.Font('/{}/digitalicg.ttf'.format(img_folder), 35)  # Шрифт для статус бара
 
 options = pygame.sprite.Group()  # Группа спрайтов, связанных с меню (настройками)
 
@@ -88,7 +97,14 @@ options.add(but1)
 options.add(field1)
 options.add(field2)
 options.add(field3)
+
+pygame.display.set_mode((300, 300))
 menu.render(0)
+
+status_bar = StatusBar(int(field1.text) * 50, int(field2.text) * 50, 0, int(field3.text), pygame.time.get_ticks(), f2)
+all_sprites.add(status_bar)
+kl['SB'] = status_bar
+
 # star the game
 size = menu.size
 # Цикл игры
@@ -96,9 +112,10 @@ running = True
 score = 0  # количество флагов установленных на бомбах
 n_flags = 0  # количество флагов
 lose_marker = 0
+time = 0
+
 while running:
     # Держим цикл на правильной скорости
-    clock.tick(FPS)
     clock.tick(FPS)
     # Ввод процесса (события)
     size = menu.size
@@ -116,21 +133,27 @@ while running:
                     W = int(field1.text) * size + 1
                     H = int(field2.text) * size + 1
                     first_click(xy[0], xy[1], XY, all_sprites, kl, bombs, num, W, H, imgsL, n_bombs, size)
-                    n_flags = 0
-                if not(kl[str(xy)].chislo()):  # если попал по бомбе, то проиграл(
-                    lose_marker = -1
+                if str(xy) in kl:  # Чтобы не происходило ошибок, когда игрок нажимает на статус бар
+                    if not(kl[str(xy)].chislo()):  # если попал по бомбе, то проиграл(
+                        lose_marker = -1
 
             if event.button == 3:  # Правая кнопка мыши ставит флаг на клетку
-                m = kl[str(xy)].flag()
-                if m[0]:  # Считаем количество флагов и сколько из них попали на бомбы
-                    score += m[1]
-                n_flags += m[1]
+                if str(xy) in kl:
+                    m = kl[str(xy)].flag()
+                    if m[0]:  # Считаем количество флагов и сколько из них попали на бомбы
+                        score += m[1]
+                    n_flags += m[1]
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_ESCAPE:
                 menu.render(0)
+
     # Обновление
     all_sprites.update()
+    if not num:  # Массив с координатми бомб пустой - маркер того, что игра началась заново, значит надо обнулить счет
+        n_flags = 0
+        score = 0
+    kl['SB'].change(time + pygame.time.get_ticks() - time, n_flags)  # обновление значение в статус баре
 
     # Рендеринг
     screen.fill(BLACK)

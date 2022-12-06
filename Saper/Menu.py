@@ -1,6 +1,8 @@
 import pygame
 import random
+import os
 from Square import Square
+from Status_bar import StatusBar
 
 
 class Menu(pygame.sprite.Sprite):
@@ -55,6 +57,7 @@ class Menu(pygame.sprite.Sprite):
         win_or_lose_marker == 1 - режим победы - второй спрайт в массиве
         win_or_lose_marker == -1 -режим проигрыша - последний спрайт в массиве
         """
+
         run = True
         while run:
             self.clock.tick(self.FPS)
@@ -90,7 +93,7 @@ class Menu(pygame.sprite.Sprite):
                             if check(self.field1.text, self.field2.text, self.field3.text):
                                 restart(self.XY, self.all_sprites, self.kl, self.bombs, self.num,
                                         int(self.field1.text) * self.size + 1, int(self.field2.text) * self.size + 1,
-                                        self.imgsL, self.size)
+                                        self.imgsL, self.size, int(self.field3.text))
 
                                 self.rect.x = (int(self.field1.text) * self.size + 1 - 300)//2  # меню в центре окна
                                 self.rect.y = (int(self.field2.text) * self.size + 1 - 300)//4
@@ -105,13 +108,13 @@ class Menu(pygame.sprite.Sprite):
                                 run = False  # Меню убирается
                             else:
                                 self.image = self.un_images[win_or_lose_marker]  # Нужно заменить изображение на
-                                # изображение с надписью
+                                # изображение с надписью о том что нельзя создать такое поле
 
                         self.field1.state()
                         self.field2.state()
                         self.field3.state()
 
-            self.but1.click(0)
+            self.but1.click(0)  # Проверяем не навел ли игрок курсор на кнопку
             self.options.update()
             self.options.draw(self.screen)
             pygame.display.flip()
@@ -141,7 +144,7 @@ def check(field1_txt, field2_txt, field3_txt):
     return True
 
 
-def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, size):
+def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, size, goal):
     """
     Функция, которая перезапускает игру, когда игрок нажимает на кнопку. Создает поле нужного размера со всеми пустыми
     кнопками
@@ -156,7 +159,11 @@ def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, size):
     :param size: размер меню
     :return:
     """
-    pygame.display.set_mode((w, h))
+    game_folder = os.path.dirname(os.path.abspath(__file__))
+    img_folder = os.path.join(game_folder, 'img')
+    f2 = pygame.font.Font('/{}/digitalicg.ttf'.format(img_folder), 35)  # Шрифт для статус бара
+
+    pygame.display.set_mode((w, h + 49))
     pygame.display.flip()
     bombs1.clear()
     XY1.clear()
@@ -171,6 +178,10 @@ def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, size):
             square = (Square(i * size + 1, j * size + 1, 0, 0, imgsL1, kl1, bombs1, size))
             kl1[str(m)] = square
             all_sprites1.add(square)
+
+    status_bar = StatusBar(w, h, 0, goal, pygame.time.get_ticks(), f2)
+    all_sprites1.add(status_bar)
+    kl1['SB'] = status_bar
 
 
 def touch(m, size1):

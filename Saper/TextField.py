@@ -46,7 +46,7 @@ class TextField(pygame.sprite.Sprite):
                 self.text = self.text[:len(self.text) - 1]
                 self.img2.blit(self.f1.render('{}'.format(self.text), False, (0, 0, 0)), (5, 5))
                 self.img1.blit(self.f1.render('{}'.format(self.text), False, (0, 0, 0)), (5, 5))
-            elif len(self.text) <= 2:  # Чтобы в ячейку нельзя было написать больше 3 цифр
+            elif len(self.text) <= 1:  # Чтобы в ячейку нельзя было написать больше 2 цифр
                 self.img2.blit(self.f1.render('{}'.format(self.text), False, (255, 255, 255)), (5, 5))
                 self.img1.blit(self.f1.render('{}'.format(self.text), False, (255, 255, 255)), (5, 5))
                 self.text += txt
