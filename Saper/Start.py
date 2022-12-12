@@ -20,7 +20,7 @@ class StartText(pygame.sprite.Sprite):
         self.group.add(self.button)
 
     def render(self):
-        pygame.display.set_mode((300, 600))
+        pygame.display.set_mode((600, 600))
         FPS = 30
         clock = pygame.time.Clock()
         running = True

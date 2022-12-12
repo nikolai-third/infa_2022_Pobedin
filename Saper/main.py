@@ -62,7 +62,7 @@ imgs_menu = []  # Массив для изображений меню, текс�
 game_folder = os.path.dirname(os.path.abspath(__file__))
 img_folder = os.path.join(game_folder, 'img')
 
-start_button = Button(170, 20, 65, 540, pygame.image.load(os.path.join(img_folder, 'start_button1.png')),
+start_button = Button(200, 50, 200, 530, pygame.image.load(os.path.join(img_folder, 'start_button1.png')),
                       pygame.image.load(os.path.join(img_folder, 'start_button2.png')))
 st = StartText(pygame.image.load(os.path.join(img_folder, 'start_text.png')), screen, start_button)
 
