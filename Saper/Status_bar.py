@@ -12,6 +12,7 @@ class StatusBar(pygame.sprite.Sprite):
         :param time: время с начала игры
         :param font: шрифт для вывода текста
         """
+
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((width, 49))
         self.image.fill((227, 227, 227))
@@ -28,10 +29,14 @@ class StatusBar(pygame.sprite.Sprite):
         self.score = score
 
     def update(self):
-        pygame.draw.rect(self.image, (0, 0, 0), (self.rect.width//2 - 32, 7, 64, 36))  # Черные прямоугольники -
-        # поля для вывода информации
-        pygame.draw.rect(self.image, (0, 0, 0), (12, 7, 42, 36))
-        pygame.draw.rect(self.image, (0, 0, 0), (self.rect.width - 12 - 42, 7, 42, 36))
+        timer_width = 64
+        counter_height = 36
+        counter_width = 42
+
+        pygame.draw.rect(self.image, (0, 0, 0), (self.rect.width//2 - 32, 7, timer_width, counter_height))
+        # Черные прямоугольники - поля для вывода информации
+        pygame.draw.rect(self.image, (0, 0, 0), (12, 7, counter_width, counter_height))
+        pygame.draw.rect(self.image, (0, 0, 0), (self.rect.width - 12 - 42, 7, counter_width, counter_height))
 
         self.image.blit(self.font.render('{}'.format(self.score), False, (255, 0, 0)), (12 + 2, 7 - 4))
         self.image.blit(self.font.render('{}'.format(self.goal - self.score), False, (255, 0, 0)),

@@ -15,6 +15,7 @@ class Square(pygame.sprite.Sprite):
         :param bombs: клетки с бомбами
         :param size: размер клетки
         """
+
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((49, 49))
         self.NB = nb  # NB - NumBer
@@ -35,22 +36,27 @@ class Square(pygame.sprite.Sprite):
         если какая-нибудь клетка пустая, то её тоже нужно открыть и так далее
         :return:
         """
+
         if self.act == 0:
             if self.NB == 0:
                 self.image = self.imgsL[0]
                 self.act = 1
                 th1 = touch([self.rect.x, self.rect.y], self.size)
+
                 for i in th1:
                     if str(i) in self.kl:
                         self.kl[str(i)].chislo()
+
             elif self.NB > 0:
                 self.image = self.imgsL[self.NB]
                 self.act = 1
+
             elif self.NB == -1:
                 for i in self.bombs:
                     self.kl[str(i)].BOOM()
                 self.image = self.imgsL[13]
                 return False
+
         return True
 
     def flag(self):
@@ -59,11 +65,14 @@ class Square(pygame.sprite.Sprite):
         и убирает флаг, если self.act == 2
         :return:
         """
+
         answer = [False, 0]  # answer[0] = True, если флаг поставлен на бомбу
         if self.NB == -1:
             answer[0] = [True]
+
         else:
             answer[0] = [False]
+
         if self.act == 0:
             self.image = self.imgsL[10]
             self.act = 2
@@ -80,8 +89,10 @@ class Square(pygame.sprite.Sprite):
         Функция для детонации всех бомб при проигрыше
         :return:
         """
+
         if self.act == 2:
             self.image = self.imgsL[12]
+
         if self.act == 0:
             self.image = self.imgsL[11]
 
@@ -93,6 +104,8 @@ def touch(m, size1):
         :param size1:
         :return:
         """
+
     th = [[m[0], m[1] - size1], [m[0] + size1, m[1] - size1], [m[0] + size1, m[1]], [m[0] + size1, m[1] + size1],
           [m[0], m[1] + size1], [m[0] - size1, m[1] + size1], [m[0] - size1, m[1]], [m[0] - size1, m[1] - size1]]
+
     return th

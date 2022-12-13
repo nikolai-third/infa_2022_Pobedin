@@ -12,6 +12,7 @@ class Button(pygame.sprite.Sprite):
         :param img1: неактивное изображение
         :param img2: активное изображение
         """
+
         pygame.sprite.Sprite.__init__(self)
         self.width = w
         self.height = h
@@ -32,11 +33,13 @@ class Button(pygame.sprite.Sprite):
         рисовать
         :return: 1 - игрок попал по кнопке
         """
+
         mouse = pygame.mouse.get_pos()
         if ((mouse[0] > self.rect.x) and (mouse[0] < self.rect.x + self.width)) and (
                 (mouse[1] > self.rect.y) and (mouse[1] < self.rect.y + self.height)):
             if happen == 1:
                 return 1
+
             elif happen == 0:
                 self.image = self.img2
 

@@ -4,6 +4,13 @@ import os
 from Square import Square
 from Status_bar import StatusBar
 
+menu_width_height = 300
+button_width = 200
+button_height = 20
+textfield_width = 66
+textfield_height = 50
+square_size = 50
+
 
 class Menu(pygame.sprite.Sprite):
     def __init__(self, width, height, FPS1, field1, field2, field3, but1, imgsL1, XY1, all_sprites1, kl1,
@@ -26,6 +33,7 @@ class Menu(pygame.sprite.Sprite):
         :param screen1: экран
         :param img: изображение меню
         """
+
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((300, 300))
         self.imgsL = imgsL1
@@ -61,6 +69,7 @@ class Menu(pygame.sprite.Sprite):
         run = True
         while run:
             self.clock.tick(self.FPS)
+
             for eventMenu in pygame.event.get():
                 if eventMenu.type == pygame.QUIT:
                     run = False
@@ -75,37 +84,75 @@ class Menu(pygame.sprite.Sprite):
                     то в него надо ввести набранную цифру, если пользователь нажал на backsapce, то нужно удалить одну
                     цифру
                     """
+
                     if 48 <= eventMenu.key <= 57:
                         if self.field1.station == 1:
                             self.field1.texts('{}'.format(eventMenu.key-48))
+
                         elif self.field2.station == 1:
                             self.field2.texts('{}'.format(eventMenu.key - 48))
+
                         elif self.field3.station == 1:
                             self.field3.texts('{}'.format(eventMenu.key - 48))
+
                     if eventMenu.key == pygame.K_BACKSPACE:
                         self.field1.texts('-1')
                         self.field2.texts('-1')
                         self.field3.texts('-1')
 
+                    if eventMenu.key == pygame.K_RETURN:
+                        if check(self.field1.text, self.field2.text, self.field3.text):
+                            restart(self.XY, self.all_sprites, self.kl, self.bombs, self.num,
+                                    int(self.field1.text) * self.size + 1, int(self.field2.text) * self.size + 1,
+                                    self.imgsL, self.size, int(self.field3.text))
+
+                            between_textfields_x = 20
+                            textfield_y = 90  # координаты текстового поля по у в системе отсчета меню
+                            self.rect.x = (int(self.field1.text) * self.size + 1 - menu_width_height) // 2  # меню в центре окна
+                            self.rect.y = (int(self.field2.text) * self.size + 1 - menu_width_height) // 4
+
+                            self.field1.rect.x = self.rect.x + 31  # Новые координаты для всех элементов меню
+                            self.field1.rect.y = self.rect.y + textfield_y
+
+                            self.field2.rect.x = self.field1.rect.x + textfield_width + between_textfields_x
+                            self.field2.rect.y = self.rect.y + textfield_y
+
+                            self.field3.rect.x = self.field2.rect.x + textfield_width + between_textfields_x
+                            self.field3.rect.y = self.rect.y + textfield_y
+
+                            self.but1.rect.x = self.rect.x + 50
+                            self.but1.rect.y = self.rect.y + 220
+
+                            run = False  # Меню убирается
+
                 if eventMenu.type == pygame.MOUSEBUTTONDOWN:
                     if eventMenu.button == 1:
                         if self.but1.click(1) == 1:  # Если нажата кнопка, то игра перезапускается
-                            if check(self.field1.text, self.field2.text, self.field3.text):
+                            if check(self.field1.text, self.field2.text, self.field3.text):  # проверяет корректность введенных данных
                                 restart(self.XY, self.all_sprites, self.kl, self.bombs, self.num,
                                         int(self.field1.text) * self.size + 1, int(self.field2.text) * self.size + 1,
                                         self.imgsL, self.size, int(self.field3.text))
 
-                                self.rect.x = (int(self.field1.text) * self.size + 1 - 300)//2  # меню в центре окна
-                                self.rect.y = (int(self.field2.text) * self.size + 1 - 300)//4
+                                between_textfields_x = 20
+                                textfield_y = 90  # координаты текстового поля по у в системе отсчета меню
+
+                                self.rect.x = (int(self.field1.text) * self.size + 1 - menu_width_height) // 2  # меню в центре окна
+                                self.rect.y = (int(self.field2.text) * self.size + 1 - menu_width_height) // 4
+
                                 self.field1.rect.x = self.rect.x + 31  # Новые координаты для всех элементов меню
-                                self.field1.rect.y = self.rect.y + 90
-                                self.field2.rect.x = self.field1.rect.x + 66 + 20
-                                self.field2.rect.y = self.rect.y + 90
-                                self.field3.rect.x = self.field2.rect.x + 66 + 20
-                                self.field3.rect.y = self.rect.y + 90
+                                self.field1.rect.y = self.rect.y + textfield_y
+
+                                self.field2.rect.x = self.field1.rect.x + textfield_width + between_textfields_x
+                                self.field2.rect.y = self.rect.y + textfield_y
+
+                                self.field3.rect.x = self.field2.rect.x + textfield_width + between_textfields_x
+                                self.field3.rect.y = self.rect.y + textfield_y
+
                                 self.but1.rect.x = self.rect.x + 50
                                 self.but1.rect.y = self.rect.y + 220
+
                                 run = False  # Меню убирается
+
                             else:
                                 self.image = self.un_images[win_or_lose_marker]  # Нужно заменить изображение на
                                 # изображение с надписью о том что нельзя создать такое поле
@@ -125,14 +172,15 @@ def check(field1_txt, field2_txt, field3_txt):
     фунцкция проверяет можно ли по введенным пользователем значениям в текстовые поля созздать игровое поле
     :return:
     """
+
     equation = [field1_txt, field2_txt, field3_txt]
-    if '' in equation or ' ' in equation or '  ' in equation:  # Если одно из полей пустое, то нельзя
+    if '' in equation:  # Если одно из полей пустое, то нельзя
         return False
 
     for i in range(3):
         equation[i] = int(equation[i])
 
-    if equation[0] * equation[1] < equation[2]:  # Если бомб больше, чем клеток, то нельзя
+    if equation[0] * equation[1] - 8 <= equation[2]:  # Если бомб больше, чем клеток, то нельзя
         return False
 
     if equation[0] * equation[1] - equation[2] > 1500:  # Если бомб слишком мало, то нельзя
@@ -159,6 +207,7 @@ def restart(XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, size, goal):
     :param size: размер меню
     :return:
     """
+
     game_folder = os.path.dirname(os.path.abspath(__file__))
     img_folder = os.path.join(game_folder, 'img')
     f2 = pygame.font.Font('/{}/digitalicg.ttf'.format(img_folder), 35)  # Шрифт для статус бара
@@ -191,10 +240,11 @@ def touch(m, size1):
     :param size1:
     :return:
     """
+
     th = [[m[0], m[1] - size1], [m[0] + size1, m[1] - size1], [m[0] + size1, m[1]], [m[0] + size1, m[1] + size1],
           [m[0], m[1] + size1], [m[0] - size1, m[1] + size1], [m[0] - size1, m[1]], [m[0] - size1, m[1] - size1]]
+
     return th
-    # def for counting the number of touches of bombs
 
 
 def first_click(x0, y0, XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, number1, size):
@@ -227,8 +277,8 @@ def first_click(x0, y0, XY1, all_sprites1, kl1, bombs1, num1, w, h, imgsL1, numb
         num1.append(m)
         XY1.remove(m)
 
-    for i in range((w // size)):  # делает квадраты бомбами или клетками с цифрами
-        for j in range((h // size)):
+    for i in range(w // size):  # делает квадраты бомбами или клетками с цифрами
+        for j in range(h // size):
             m = [i * size + 1, j * size + 1]
             if m in num1:
                 square = (Square(i * size + 1, j * size + 1, -1, 0, imgsL1, kl1, bombs1, size))
